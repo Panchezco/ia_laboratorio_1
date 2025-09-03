@@ -1,9 +1,9 @@
 #include <BSP.h>
 
 // Pines
-#define LED_PIN      2
-#define BTN_PIN      15
-#define HUM_PIN      A0
+#define LED_PIN      13
+#define BTN_PIN      2
+#define HUM_PIN      A1
 #define LDR_PIN      A3
 #define TEMP_PIN     A4
 
@@ -25,11 +25,20 @@ bool ledState = false;
 unsigned long lastADCReadTime = 0;
 const unsigned long adcInterval = 1000; // 1 s
 
+void miISR() {
+      imprimirMensaje("Sistema inicializado -> MODO OFF");
+    gpioSet(LED_PIN, HIGH);
+}
+
 void setup() {
   Serial.begin(9600);
 
   gpioInitPin(LED_PIN, OUTPUT);
   gpioInitPin(BTN_PIN, INPUT_PULLUP);
+
+    gpioInitPin(2, OUTPUT);
+    gpioInitInterrupts();  
+    gpioAttachInterrupt(3, miISR, RISING); // Interrupción en pin 4 con flanco ascendente
 
   imprimirMensaje("Sistema inicializado -> MODO OFF");
 }
@@ -84,3 +93,4 @@ void loop() {
     }
   }
 }
+

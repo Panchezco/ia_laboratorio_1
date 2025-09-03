@@ -11,7 +11,7 @@
 
 void imprimirMensaje(const char *msg) {
 #ifdef ARDUINO_ARCH_AVR
-    Serial.begin(9600);
+    //Serial.begin(9600);
     Serial.print("Mensaje: ");
     Serial.println(msg);
 #endif
@@ -24,14 +24,14 @@ void imprimirMensaje(const char *msg) {
 
 void imprimirValor(const char *etiqueta, int valor) {
 #ifdef ARDUINO_ARCH_AVR
-    Serial.begin(9600);
+    //Serial.begin(9600);
     Serial.print(etiqueta);
     Serial.print(": ");
     Serial.println(valor);
 #endif
 
 #ifdef ARDUINO_ARCH_ESP32
-     Serial.begin(9600);
+    // Serial.begin(9600);
     printf("%s: %d\n", etiqueta, valor);
 #endif
 }

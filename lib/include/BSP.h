@@ -34,6 +34,10 @@ void bspInit();
 
 bool gpioRead(uint8_t pin);
 
+void gpioInitInterrupts();
+void gpioAttachInterrupt(uint8_t pin, void (*isr)(), int mode);
+void gpioDetachInterrupt(uint8_t pin);
+
 // Pines
 #define LED_PIN   13
 #define BTN_PIN   12

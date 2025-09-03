@@ -64,3 +64,55 @@ bool gpioRead(uint8_t pin) {
     return gpio_get_level((gpio_num_t)pin);
 #endif
 }
+
+
+
+// Inicializa una interrupción
+
+void gpioAttachInterrupt(uint8_t pin, void (*isr)(), int mode) {
+#ifdef ARDUINO_ARCH_AVR
+    // En Arduino clásico
+    attachInterrupt(digitalPinToInterrupt(pin), isr, mode);
+#endif
+
+#ifdef ARDUINO_ARCH_ESP32
+    // En ESP32
+    gpio_reset_pin((gpio_num_t)pin);
+    gpio_set_direction((gpio_num_t)pin, GPIO_MODE_INPUT);
+
+    // Configuración básica
+    gpio_set_intr_type((gpio_num_t)pin, 
+        mode == RISING    ? GPIO_INTR_POSEDGE :
+        mode == FALLING   ? GPIO_INTR_NEGEDGE :
+        mode == CHANGE    ? GPIO_INTR_ANYEDGE :
+                            GPIO_INTR_DISABLE);
+
+    // Registrar el handler
+    gpio_isr_handler_add((gpio_num_t)pin, (gpio_isr_t)isr, NULL);
+#endif
+}
+
+// Deshabilita la interrupcinb
+
+void gpioDetachInterrupt(uint8_t pin) {
+#ifdef ARDUINO_ARCH_AVR
+    detachInterrupt(digitalPinToInterrupt(pin));
+#endif
+
+#ifdef ARDUINO_ARCH_ESP32
+    gpio_isr_handler_remove((gpio_num_t)pin);
+#endif
+}
+
+
+// Habilita el servicio global de ISR (ESP32 necesita init)
+
+void gpioInitInterrupts() {
+#ifdef ARDUINO_ARCH_ESP32
+    static bool initialized = false;
+    if (!initialized) {
+        gpio_install_isr_service(0);  // instala el servicio ISR
+        initialized = true;
+    }
+#endif
+}
